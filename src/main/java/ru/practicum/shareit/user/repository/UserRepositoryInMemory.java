@@ -2,24 +2,25 @@ package ru.practicum.shareit.user.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.Exception.NotFoundException;
-import ru.practicum.shareit.Exception.ValidationException;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 @Slf4j
 public class UserRepositoryInMemory implements UserRepository {
     private final HashMap<Long, User> userMapId = new HashMap<>();
     private final HashMap<Long, String> userMapEmail = new HashMap<>();
-    private Long currentId = Long.valueOf(0);
+
+    private Long currentId = 0L;
 
     @Override
     public List<User> findAll() {
-        return userMapId.values().stream().collect(Collectors.toList());
+        return new ArrayList<>(userMapId.values());
     }
 
     @Override

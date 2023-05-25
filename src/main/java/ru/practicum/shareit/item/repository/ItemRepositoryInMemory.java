@@ -2,10 +2,8 @@ package ru.practicum.shareit.item.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.Exception.NotFoundException;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.model.ItemMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -17,10 +15,9 @@ import java.util.stream.Collectors;
 public class ItemRepositoryInMemory implements ItemRepository {
     private final Map<Long, List<Item>> items = new HashMap<>();
     private final Map<Long, Item> itemMap = new HashMap<>();
-    private final ItemMapper itemMapper = new ItemMapper();
     private final UserRepository userRepository;
 
-    private Long currentId = Long.valueOf(0);
+    private Long currentId = 0L;
 
     @Override
     public List<Item> findByUserId(long userId) {
@@ -33,7 +30,7 @@ public class ItemRepositoryInMemory implements ItemRepository {
             return new ArrayList<>();
         } else {
             return itemMap.values().stream()
-                    .filter(x -> x.isAvailable() && x.getDescription().toLowerCase(Locale.ROOT).contains(text.toLowerCase()))
+                    .filter(x -> x.getAvailable() && x.getDescription().toLowerCase(Locale.ROOT).contains(text.toLowerCase()))
                     .collect(Collectors.toList());
         }
     }
@@ -62,9 +59,9 @@ public class ItemRepositoryInMemory implements ItemRepository {
     }
 
     @Override
-    public Item create(ItemDto itemDto, Long userId) {
+    public Item create(Item item, Long userId) {
         User user = userRepository.get(userId); //проверка на наличие пользователя
-        Item item = ItemMapper.toItem(itemDto, getId(), null, null);
+        item.setId(getId());
         items.compute(userId, (creatorId, userItems) -> {
             if (userItems == null) {
                 userItems = new ArrayList<>();
@@ -77,20 +74,20 @@ public class ItemRepositoryInMemory implements ItemRepository {
     }
 
     @Override
-    public Item update(ItemDto itemDto, Long userId, Long itemId) {
-        Item item = findByItemIdAndUserId(itemId, userId);
-        if (item != null) {
-            if (itemDto.getName() != null) {
-                item.setName(itemDto.getName());
+    public Item update(Item itemNew, Long userId, Long itemId) {
+        Item itemCurrent = findByItemIdAndUserId(itemId, userId);
+        if (itemCurrent != null) {
+            if (itemNew.getName() != null) {
+                itemCurrent.setName(itemNew.getName());
             }
-            if (itemDto.getDescription() != null) {
-                item.setDescription(itemDto.getDescription());
+            if (itemNew.getDescription() != null) {
+                itemCurrent.setDescription(itemNew.getDescription());
             }
-            if (itemDto.getAvailable() != null) {
-                item.setAvailable(itemDto.getAvailable());
+            if (itemNew.getAvailable() != null) {
+                itemCurrent.setAvailable(itemNew.getAvailable());
             }
         }
-        return item;
+        return itemCurrent;
     }
 
     private long getId() {
