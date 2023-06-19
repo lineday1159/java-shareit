@@ -76,7 +76,7 @@ public class ItemServiceImpl implements ItemService {
         Sort sortDesc = Sort.by("start").descending();
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found"));
 
-        if (item.getOwner().getId() == userId) {
+        if (item.getOwner().getId().equals(userId)) {
             BookingInItemDto nextItemBooking = BookingMapper.bookingToBookingInItemDto(
                     bookingRepository.findTopByItemIdAndStartIsAfterAndStatus(item.getId(), new Date(), BookingStatus.APPROVED, sortAsc));
             BookingInItemDto lastItemBooking = BookingMapper.bookingToBookingInItemDto(

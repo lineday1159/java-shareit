@@ -44,7 +44,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto findById(Long id, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
         Booking booking = bookingRepository.findById(id).orElseThrow(() -> new NotFoundException("Booking not found"));
-        if (booking.getBooker().getId() != userId && booking.getItem().getOwner().getId() != userId) {
+        if (booking.getBooker().getId().equals(userId) && booking.getItem().getOwner().getId().equals(userId)) {
             throw new NotFoundException("Only booker or owner has an access to booking");
         }
         return BookingMapper.bookingToBookingDto(booking);
@@ -114,7 +114,7 @@ public class BookingServiceImpl implements BookingService {
         if (!item.getIsAvailable()) {
             throw new DataErrorException("Item is not available");
         }
-        if (item.getOwner().getId() == userId) {
+        if (item.getOwner().getId().equals(userId)) {
             throw new NotFoundException("owner can't book himself items");
         }
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
@@ -127,7 +127,7 @@ public class BookingServiceImpl implements BookingService {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Booking not found"));
         BookingStatus bookingStatus = approved ? BookingStatus.APPROVED : BookingStatus.REJECTED;
-        if (booking.getItem().getOwner().getId() != user.getId()) {
+        if (booking.getItem().getOwner().getId().equals(user.getId())) {
             throw new NotFoundException("Only owner can change booking status");
         }
         if (!booking.getStatus().equals(BookingStatus.WAITING)) {
