@@ -21,8 +21,8 @@ import java.util.List;
 
 public class BookingMapper {
 
-    private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
-    private static final DateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
+    private static final String dateFormat = "yyyy-MM-dd'T'HH:mm:ss";
+    private static final DateFormat dateFormatter = new SimpleDateFormat(dateFormat);
 
     public static BookingDto bookingToBookingDto(Booking booking) {
         UserDto userDto = UserMapper.toUserDto(booking.getBooker());

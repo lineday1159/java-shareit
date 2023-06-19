@@ -37,8 +37,8 @@ public class BookingServiceImpl implements BookingService {
     @Autowired
     private final ItemRepository itemRepository;
 
-    private final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
-    private final DateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
+    private final String dateFormat = "yyyy-MM-dd'T'HH:mm:ss";
+    private final DateFormat dateFormatter = new SimpleDateFormat(dateFormat);
 
     @Override
     public BookingDto findById(Long id, Long userId) {
