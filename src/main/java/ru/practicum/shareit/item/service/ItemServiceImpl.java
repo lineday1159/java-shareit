@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingInItemDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
@@ -42,7 +43,7 @@ public class ItemServiceImpl implements ItemService {
     @Autowired
     private final BookingRepository bookingRepository;
 
-
+    @Transactional(readOnly = true)
     @Override
     public List<ItemsDto> getItems(Long userId) {
         Sort sortAsc = Sort.by("start").ascending();
@@ -58,6 +59,7 @@ public class ItemServiceImpl implements ItemService {
         return itemsDtos;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<ItemDto> searchItems(String text) {
         if (text.isBlank()) {
@@ -70,6 +72,7 @@ public class ItemServiceImpl implements ItemService {
         }
     }
 
+    @Transactional(readOnly = true)
     @Override
     public ItemsDto getItem(Long itemId, Long userId) {
         Sort sortAsc = Sort.by("start").ascending();
@@ -88,6 +91,7 @@ public class ItemServiceImpl implements ItemService {
 
     }
 
+    @Transactional
     @Override
     public ItemDto create(ItemDto itemDto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
@@ -95,6 +99,7 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.toItemDto(itemRepository.save(item), null);
     }
 
+    @Transactional
     @Override
     public ItemDto update(ItemDto itemDto, Long userId, Long itemId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
@@ -111,6 +116,7 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.toItemDto(itemRepository.save(item), null);
     }
 
+    @Transactional
     @Override
     public CommentDto createComment(Long itemId, Long userId, CommentDto commentDto) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));

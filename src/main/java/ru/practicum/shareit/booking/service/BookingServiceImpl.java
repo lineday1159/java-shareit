@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingReqDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -39,6 +40,7 @@ public class BookingServiceImpl implements BookingService {
     private final String dateFormat = "yyyy-MM-dd'T'HH:mm:ss";
     private final DateFormat dateFormatter = new SimpleDateFormat(dateFormat);
 
+    @Transactional(readOnly = true)
     @Override
     public BookingDto findById(Long id, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
@@ -49,6 +51,7 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.bookingToBookingDto(booking);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<BookingDto> findByState(String state, Long userId) {
         List<Booking> bookings;
@@ -81,6 +84,7 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.bookingToBookingDto(bookings);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<BookingDto> findByStateAndOwner(String state, Long userId) {
         List<Booking> bookings;
@@ -112,6 +116,7 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.bookingToBookingDto(bookings);
     }
 
+    @Transactional
     @Override
     public BookingDto save(BookingReqDto bookingDto, Long userId) throws ParseException {
         Date dateStart = dateFormatter.parse(bookingDto.getStart());
@@ -133,6 +138,7 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.bookingToBookingDto(bookingRepository.save(booking));
     }
 
+    @Transactional
     @Override
     public BookingDto updateState(Long bookingId, Boolean approved, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));

@@ -3,6 +3,7 @@ package ru.practicum.shareit.user.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.mapper.UserMapper;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -17,28 +18,30 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     @Autowired
     private final UserRepository userRepository;
-    private final UserMapper userMapper = new UserMapper();
 
-
+    @Transactional(readOnly = true)
     @Override
     public List<UserDto> getUsers() {
         return userRepository.findAll()
                 .stream()
-                .map(user -> UserMapper.toUserDto(user))
+                .map(UserMapper::toUserDto)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public UserDto getUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
         return UserMapper.toUserDto(user);
     }
 
+    @Transactional
     @Override
     public UserDto create(User user) {
         return UserMapper.toUserDto(userRepository.save(user));
     }
 
+    @Transactional
     @Override
     public UserDto update(UserDto userDto, Long userId) {
         User oldUser = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
@@ -51,6 +54,7 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toUserDto(userRepository.save(oldUser));
     }
 
+    @Transactional
     @Override
     public void delete(Long userId) {
         userRepository.deleteById(userId);
