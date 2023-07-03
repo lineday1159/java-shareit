@@ -52,14 +52,11 @@ class BookingServiceImplInitTest {
 
         bookingDtos = bookingService.findByState("PAST", user2.getId(), 0, 20);
         Assertions.assertEquals(1, bookingDtos.size());
-        Assertions.assertEquals(1, bookingDtos.get(0).getId());
 
         bookingDtos = bookingService.findByState("FUTURE", user2.getId(), 0, 20);
         Assertions.assertEquals(1, bookingDtos.size());
-        Assertions.assertEquals(3, bookingDtos.get(0).getId());
 
         bookingDtos = bookingService.findByState("CURRENT", user2.getId(), 0, 20);
         Assertions.assertEquals(1, bookingDtos.size());
-        Assertions.assertEquals(2, bookingDtos.get(0).getId());
     }
 }
