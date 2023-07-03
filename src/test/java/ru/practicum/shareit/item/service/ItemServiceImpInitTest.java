@@ -8,12 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemsDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.request.repository.RequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -47,8 +44,8 @@ class ItemServiceImpInitTest {
         User user3 = new User(null, "User3", "User3@gmail.com");
         userRepository.save(user3);
 
-        Item item1  = new Item(null, "item1",user1, null ,"description1", true);
-        Item item2  = new Item(null, "item2",user1, null ,"description2", true);
+        Item item1 = new Item(null, "item1", user1, null, "description1", true);
+        Item item2 = new Item(null, "item2", user1, null, "description2", true);
         itemRepository.save(item1);
         itemRepository.save(item2);
 
