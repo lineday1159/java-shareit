@@ -104,10 +104,22 @@ class BookingServiceImplTest {
         when(mockBookingRepository.findByBookerIdAndEndIsAfterAndStartIsBefore(Mockito.anyLong(), Mockito.any(), Mockito.any(), Mockito.any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(booking3)));
 
+        when(mockBookingRepository.findByBookerIdAndEndIsBefore(Mockito.anyLong(), Mockito.any(), Mockito.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(booking3)));
+
+        when(mockBookingRepository.findByBookerIdAndStartIsAfter(Mockito.anyLong(), Mockito.any(), Mockito.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(booking3)));
+
         List<BookingDto> bookingDtos = bookingService.findByState("ALL", user2.getId(), 0, 20);
         Assertions.assertEquals(4, bookingDtos.size());
 
         bookingDtos = bookingService.findByState("CURRENT", user2.getId(), 0, 20);
+        Assertions.assertEquals(1, bookingDtos.size());
+
+        bookingDtos = bookingService.findByState("PAST", user2.getId(), 0, 20);
+        Assertions.assertEquals(1, bookingDtos.size());
+
+        bookingDtos = bookingService.findByState("FUTURE", user2.getId(), 0, 20);
         Assertions.assertEquals(1, bookingDtos.size());
 
         ValidationException exception = Assertions.assertThrows(
@@ -138,10 +150,22 @@ class BookingServiceImplTest {
         when(mockBookingRepository.findByItemOwnerIdAndEndIsAfterAndStartIsBefore(Mockito.anyLong(), Mockito.any(), Mockito.any(), Mockito.any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(booking3)));
 
+        when(mockBookingRepository.findByItemOwnerIdAndEndIsBefore(Mockito.anyLong(), Mockito.any(), Mockito.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(booking3)));
+
+        when(mockBookingRepository.findByItemOwnerIdAndStartIsAfter(Mockito.anyLong(), Mockito.any(), Mockito.any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(booking3)));
+
         List<BookingDto> bookingDtos = bookingService.findByStateAndOwner("ALL", user1.getId(), 0, 20);
         Assertions.assertEquals(4, bookingDtos.size());
 
         bookingDtos = bookingService.findByStateAndOwner("CURRENT", user1.getId(), 0, 20);
+        Assertions.assertEquals(1, bookingDtos.size());
+
+        bookingDtos = bookingService.findByStateAndOwner("PAST", user1.getId(), 0, 20);
+        Assertions.assertEquals(1, bookingDtos.size());
+
+        bookingDtos = bookingService.findByStateAndOwner("FUTURE", user1.getId(), 0, 20);
         Assertions.assertEquals(1, bookingDtos.size());
 
         ValidationException exception = Assertions.assertThrows(
