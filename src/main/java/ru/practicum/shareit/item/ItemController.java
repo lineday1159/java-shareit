@@ -20,8 +20,10 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemsDto> getItems(@RequestHeader("X-Sharer-User-Id") long userId) {
-        return itemService.getItems(userId);
+    public List<ItemsDto> getItems(@RequestHeader("X-Sharer-User-Id") long userId,
+                                   @RequestParam(defaultValue = "0") int from,
+                                   @RequestParam(defaultValue = "20") int size) {
+        return itemService.getItems(userId, from, size);
     }
 
     @GetMapping("/{itemId}")
@@ -31,8 +33,10 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItem(@RequestParam String text) {
-        return itemService.searchItems(text);
+    public List<ItemDto> searchItem(@RequestParam String text,
+                                    @RequestParam(defaultValue = "0") int from,
+                                    @RequestParam(defaultValue = "20") int size) {
+        return itemService.searchItems(text, from, size);
     }
 
     @PostMapping

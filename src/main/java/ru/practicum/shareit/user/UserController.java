@@ -20,12 +20,12 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public List<UserDto> getItems() {
+    public List<UserDto> getUsers() {
         return userService.getUsers();
     }
 
     @GetMapping("/{userId}")
-    public UserDto getItem(@PathVariable long userId) {
+    public UserDto getUser(@PathVariable long userId) {
         return userService.getUser(userId);
     }
 

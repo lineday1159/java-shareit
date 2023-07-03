@@ -3,6 +3,8 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,61 +55,66 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<BookingDto> findByState(String state, Long userId) {
+    public List<BookingDto> findByState(String state, Long userId, int from, int size) {
         List<Booking> bookings;
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
         Sort sort = Sort.by("end").descending();
-        log.info(new Date().toString());
+        if (from < 0 || size <= 0) {
+            throw new ValidationException("Not correct page parameters");
+        }
+        Pageable pageable = PageRequest.of(from / size, size, sort);
         switch (state) {
             case "ALL":
-                bookings = bookingRepository.findByBookerId(userId, sort);
+                bookings = bookingRepository.findByBookerId(userId, pageable).toList();
                 break;
             case "CURRENT":
-                bookings = bookingRepository.findByBookerIdAndEndIsAfterAndStartIsBefore(userId, new Date(), new Date(), sort);
+                bookings = bookingRepository.findByBookerIdAndEndIsAfterAndStartIsBefore(userId, new Date(), new Date(), pageable).toList();
                 break;
             case "PAST":
-                bookings = bookingRepository.findByBookerIdAndEndIsBefore(userId, new Date(), sort);
+                bookings = bookingRepository.findByBookerIdAndEndIsBefore(userId, new Date(), pageable).toList();
                 break;
             case "FUTURE":
-                bookings = bookingRepository.findByBookerIdAndStartIsAfter(userId, new Date(), sort);
+                bookings = bookingRepository.findByBookerIdAndStartIsAfter(userId, new Date(), pageable).toList();
                 break;
             default:
                 try {
                     BookingStatus status = BookingStatus.valueOf(state);
-                    bookings = bookingRepository.findByStatusAndBookerId(status, userId, sort);
+                    bookings = bookingRepository.findByStatusAndBookerId(status, userId, pageable).toList();
                 } catch (IllegalArgumentException e) {
                     throw new ValidationException("Unknown state: " + state);
                 }
                 break;
         }
-        log.info(bookings.toString());
         return BookingMapper.bookingToBookingDto(bookings);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<BookingDto> findByStateAndOwner(String state, Long userId) {
+    public List<BookingDto> findByStateAndOwner(String state, Long userId, int from, int size) {
         List<Booking> bookings;
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
         Sort sort = Sort.by("end").descending();
-        log.info(new Date().toString());
+        if (from < 0 || size <= 0) {
+            throw new ValidationException("Not correct page parameters");
+        }
+        Pageable pageable = PageRequest.of(from / size, size, sort);
         switch (state) {
             case "ALL":
-                bookings = bookingRepository.findByItemOwnerId(userId, sort);
+                bookings = bookingRepository.findByItemOwnerId(userId, pageable).toList();
                 break;
             case "CURRENT":
-                bookings = bookingRepository.findByItemOwnerIdAndEndIsAfterAndStartIsBefore(userId, new Date(), new Date(), sort);
+                bookings = bookingRepository.findByItemOwnerIdAndEndIsAfterAndStartIsBefore(userId, new Date(), new Date(), pageable).toList();
                 break;
             case "PAST":
-                bookings = bookingRepository.findByItemOwnerIdAndEndIsBefore(userId, new Date(), sort);
+                bookings = bookingRepository.findByItemOwnerIdAndEndIsBefore(userId, new Date(), pageable).toList();
                 break;
             case "FUTURE":
-                bookings = bookingRepository.findByItemOwnerIdAndStartIsAfter(userId, new Date(), sort);
+                bookings = bookingRepository.findByItemOwnerIdAndStartIsAfter(userId, new Date(), pageable).toList();
                 break;
             default:
                 try {
                     BookingStatus status = BookingStatus.valueOf(state);
-                    bookings = bookingRepository.findByStatusAndItemOwnerId(status, userId, sort);
+                    bookings = bookingRepository.findByStatusAndItemOwnerId(status, userId, pageable).toList();
                 } catch (IllegalArgumentException e) {
                     throw new ValidationException("Unknown state: " + state);
                 }
