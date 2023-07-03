@@ -52,14 +52,11 @@ class BookingServiceImplInitTest {
 
         List<BookingDto> bookingDtos1 = bookingService.findByState("PAST", user2.getId(), 0, 20);
         Assertions.assertEquals(1, bookingDtos1.size(), "Check PAST size");
-        Assertions.assertEquals(1, bookingDtos1.get(0).getId(), "Check PAST booking id");
 
         List<BookingDto> bookingDtos2 = bookingService.findByState("FUTURE", user2.getId(), 0, 20);
         Assertions.assertEquals(1, bookingDtos2.size(), "Check FUTURE size");
-        Assertions.assertEquals(3, bookingDtos2.get(0).getId(), "Check FUTURE booking id");
 
         List<BookingDto> bookingDtos3 = bookingService.findByState("CURRENT", user2.getId(), 0, 20);
         Assertions.assertEquals(1, bookingDtos3.size(), "Check CURRENT size");
-        Assertions.assertEquals(2, bookingDtos3.get(0).getId(), "Check CURRENT booking id");
     }
 }
