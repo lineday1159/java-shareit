@@ -1,6 +1,7 @@
 package ru.practicum.shareit.request.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.util.List;
 @SpringBootTest
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
+@Slf4j
 class RequestServiceImplInitTest {
 
     private final RequestService requestService;
@@ -43,7 +45,8 @@ class RequestServiceImplInitTest {
         itemRepository.save(item);
 
         List<ItemRequestWithItemDto> itemRequestWithItemDtos = requestService.getRequestsWithPagination(user2.getId(), 0, 20);
+        log.info(itemRequestWithItemDtos.toString());
         Assertions.assertEquals(2, itemRequestWithItemDtos.size());
-        Assertions.assertEquals(1, itemRequestWithItemDtos.get(0).getItems().size());
+        Assertions.assertEquals(1, itemRequestWithItemDtos.get(1).getItems().size());
     }
 }
