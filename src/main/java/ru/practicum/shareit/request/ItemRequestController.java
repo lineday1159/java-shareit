@@ -10,7 +10,6 @@ import ru.practicum.shareit.request.dto.ItemRequestWithItemDto;
 import ru.practicum.shareit.request.service.RequestService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
