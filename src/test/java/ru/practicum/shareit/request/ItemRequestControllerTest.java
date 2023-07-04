@@ -58,7 +58,7 @@ class ItemRequestControllerTest {
         ItemDto itemDto = new ItemDto(1L, "test", "test", true, 1L, null);
         ItemRequestWithItemDto itemRequestDto = new ItemRequestWithItemDto(1L, "Test", new Date(), List.of(itemDto));
 
-        when(requestService.getItems(Mockito.anyLong()))
+        when(requestService.getRequests(Mockito.anyLong()))
                 .thenReturn(List.of(itemRequestDto));
 
         mvc.perform(get("/requests")
@@ -77,7 +77,7 @@ class ItemRequestControllerTest {
         ItemDto itemDto = new ItemDto(1L, "test", "test", true, 1L, null);
         ItemRequestWithItemDto itemRequestDto = new ItemRequestWithItemDto(1L, "Test", new Date(), List.of(itemDto));
 
-        when(requestService.getItemsWithPagination(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt()))
+        when(requestService.getRequestsWithPagination(Mockito.anyLong(), Mockito.anyInt(), Mockito.anyInt()))
                 .thenReturn(List.of(itemRequestDto));
 
         mvc.perform(get("/requests/all")
@@ -96,7 +96,7 @@ class ItemRequestControllerTest {
         ItemDto itemDto = new ItemDto(1L, "test", "test", true, 1L, null);
         ItemRequestWithItemDto itemRequestDto = new ItemRequestWithItemDto(1L, "Test", new Date(), List.of(itemDto));
 
-        when(requestService.getItemById(Mockito.anyLong(), Mockito.anyLong()))
+        when(requestService.getRequestById(Mockito.anyLong(), Mockito.anyLong()))
                 .thenReturn(itemRequestDto);
 
         mvc.perform(get("/requests/1")
