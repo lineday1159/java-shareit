@@ -124,12 +124,6 @@ class BookingServiceImplTest {
 
         ValidationException exception = Assertions.assertThrows(
                 ValidationException.class,
-                () -> bookingService.findByState("CURRENT", user2.getId(), -1, 20));
-
-        Assertions.assertEquals("Not correct page parameters", exception.getMessage());
-
-        exception = Assertions.assertThrows(
-                ValidationException.class,
                 () -> bookingService.findByState("CURR232ENT", user2.getId(), 0, 20));
 
         Assertions.assertEquals("Unknown state: CURR232ENT", exception.getMessage());
@@ -169,12 +163,6 @@ class BookingServiceImplTest {
         Assertions.assertEquals(1, bookingDtos.size());
 
         ValidationException exception = Assertions.assertThrows(
-                ValidationException.class,
-                () -> bookingService.findByStateAndOwner("CURRENT", user1.getId(), -1, 20));
-
-        Assertions.assertEquals("Not correct page parameters", exception.getMessage());
-
-        exception = Assertions.assertThrows(
                 ValidationException.class,
                 () -> bookingService.findByStateAndOwner("CURR232ENT", user1.getId(), 0, 20));
 

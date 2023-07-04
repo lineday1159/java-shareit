@@ -42,7 +42,7 @@ class RequestServiceImplInitTest {
         Item item = new Item(null, "item1", user1, itemRequest1, "description", true);
         itemRepository.save(item);
 
-        List<ItemRequestWithItemDto> itemRequestWithItemDtos = requestService.getItemsWithPagination(user2.getId(), 0, 20);
+        List<ItemRequestWithItemDto> itemRequestWithItemDtos = requestService.getRequestsWithPagination(user2.getId(), 0, 20);
         Assertions.assertEquals(2, itemRequestWithItemDtos.size());
         Assertions.assertEquals(1, itemRequestWithItemDtos.get(0).getItems().size());
     }

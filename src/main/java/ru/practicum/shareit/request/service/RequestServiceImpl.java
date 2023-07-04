@@ -9,7 +9,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestWithItemDto;
@@ -46,9 +45,10 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ItemRequestWithItemDto> getItems(Long userId) {
+    public List<ItemRequestWithItemDto> getRequests(Long userId) {
         User requester = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
-        List<ItemRequest> itemRequests = requestRepository.findAllByRequesterId(userId);
+        Sort sort = Sort.by("created").descending();
+        List<ItemRequest> itemRequests = requestRepository.findAllByRequesterId(userId, sort);
         List<ItemRequestWithItemDto> itemRequestWithItemDtos = new ArrayList<>();
         for (ItemRequest itemRequest : itemRequests) {
             itemRequestWithItemDtos.add(ItemRequestMapper.toRequestItemWithItemDto(itemRequest, itemRepository.findByRequestId(itemRequest.getId())));
@@ -57,12 +57,9 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public List<ItemRequestWithItemDto> getItemsWithPagination(Long userId, int from, int size) {
+    public List<ItemRequestWithItemDto> getRequestsWithPagination(Long userId, int from, int size) {
         User requester = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
-        if (from < 0 || size <= 0) {
-            throw new ValidationException("Not correct page parameters");
-        }
-        Pageable pageable = PageRequest.of(from / size, size, Sort.by("created"));
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("created").descending());
         List<ItemRequest> itemRequests = requestRepository.findAllByRequesterIdNot(userId, pageable).toList();
         List<ItemRequestWithItemDto> itemRequestWithItemDtos = new ArrayList<>();
         for (ItemRequest itemRequest : itemRequests) {
@@ -73,7 +70,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     @Transactional(readOnly = true)
-    public ItemRequestWithItemDto getItemById(Long requestId, Long userId) {
+    public ItemRequestWithItemDto getRequestById(Long requestId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
         ItemRequest itemRequest = requestRepository.findById(requestId).orElseThrow(() -> new NotFoundException("Request not found"));
         return ItemRequestMapper.toRequestItemWithItemDto(itemRequest, itemRepository.findByRequestId(itemRequest.getId()));

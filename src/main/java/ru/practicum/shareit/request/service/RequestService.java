@@ -9,9 +9,9 @@ public interface RequestService {
 
     ItemRequestDto create(ItemRequestDto itemRequestDto, Long userId);
 
-    List<ItemRequestWithItemDto> getItems(Long userId);
+    List<ItemRequestWithItemDto> getRequests(Long userId);
 
-    List<ItemRequestWithItemDto> getItemsWithPagination(Long userId, int from, int size);
+    List<ItemRequestWithItemDto> getRequestsWithPagination(Long userId, int from, int size);
 
-    ItemRequestWithItemDto getItemById(Long requestId, Long userId);
+    ItemRequestWithItemDto getRequestById(Long requestId, Long userId);
 }

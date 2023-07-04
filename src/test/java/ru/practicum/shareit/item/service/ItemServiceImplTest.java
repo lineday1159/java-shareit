@@ -14,7 +14,6 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.DataErrorException;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemsDto;
@@ -94,16 +93,6 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void getItemsWithExc() {
-
-        final ValidationException exception = Assertions.assertThrows(
-                ValidationException.class,
-                () -> itemService.getItems(1L, -1, 1));
-
-        Assertions.assertEquals("Not correct page parameters", exception.getMessage());
-    }
-
-    @Test
     void searchItems() {
         when(mockItemRepository.search(Mockito.any(), Mockito.any()))
                 .thenReturn(new PageImpl<>(List.of(item)));
@@ -116,15 +105,6 @@ class ItemServiceImplTest {
         Assertions.assertEquals(item.getDescription(), itemDtos.get(0).getDescription());
     }
 
-    @Test
-    void searchItemsWithExc() {
-
-        final ValidationException exception = Assertions.assertThrows(
-                ValidationException.class,
-                () -> itemService.searchItems("test", -1, 1));
-
-        Assertions.assertEquals("Not correct page parameters", exception.getMessage());
-    }
 
     @Test
     void getItem() {
