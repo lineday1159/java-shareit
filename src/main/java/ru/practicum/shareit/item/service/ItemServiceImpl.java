@@ -3,6 +3,8 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +14,7 @@ import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.DataErrorException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemsDto;
@@ -22,6 +25,8 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.mapper.BookingMapper;
 import ru.practicum.shareit.mapper.CommentMapper;
 import ru.practicum.shareit.mapper.ItemMapper;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.RequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -42,14 +47,20 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
     @Autowired
     private final BookingRepository bookingRepository;
+    @Autowired
+    private final RequestRepository requestRepository;
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemsDto> getItems(Long userId) {
+    public List<ItemsDto> getItems(Long userId, int from, int size) {
         Sort sortAsc = Sort.by("start").ascending();
         Sort sortDesc = Sort.by("start").descending();
         List<ItemsDto> itemsDtos = new ArrayList<>();
-        for (Item item : itemRepository.findByOwnerIdOrderByIdAsc(userId)) {
+        if (from < 0 || size <= 0) {
+            throw new ValidationException("Not correct page parameters");
+        }
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by("id"));
+        for (Item item : itemRepository.findByOwnerId(userId, pageable)) {
             BookingInItemDto nextItemBooking = BookingMapper.bookingToBookingInItemDto(
                     bookingRepository.findTopByItemIdAndStartIsAfterAndStatus(item.getId(), new Date(), BookingStatus.APPROVED, sortAsc));
             BookingInItemDto lastItemBooking = BookingMapper.bookingToBookingInItemDto(
@@ -61,11 +72,15 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDto> searchItems(String text) {
+    public List<ItemDto> searchItems(String text, int from, int size) {
         if (text.isBlank()) {
             return new ArrayList<>();
         } else {
-            return itemRepository.search(text)
+            if (from < 0 || size <= 0) {
+                throw new ValidationException("Not correct page parameters");
+            }
+            Pageable pageable = PageRequest.of(from / size, size, Sort.by("id"));
+            return itemRepository.search(text, pageable)
                     .stream()
                     .map(item -> ItemMapper.toItemDto(item, null))
                     .collect(Collectors.toList());
@@ -95,7 +110,11 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto create(ItemDto itemDto, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
-        Item item = ItemMapper.toItem(itemDto, null, user, null);
+        ItemRequest request = null;
+        if (itemDto.getRequestId() != null) {
+            request = requestRepository.findById(itemDto.getRequestId()).orElseThrow(() -> new NotFoundException("Request not found"));
+        }
+        Item item = ItemMapper.toItem(itemDto, null, user, request);
         return ItemMapper.toItemDto(itemRepository.save(item), null);
     }
 
@@ -123,7 +142,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Item not found"));
         List<Booking> bookings = bookingRepository.findByItemIdAndBookerIdAndStatusAndStartIsBefore(itemId, userId, BookingStatus.APPROVED, new Date());
         if (bookings.size() == 0) {
-            throw new DataErrorException("booking not found");
+            throw new DataErrorException("Booking not found");
         }
         Comment comment = CommentMapper.commentDtoToComment(commentDto, user, item);
         comment.setCreated(new Date());
